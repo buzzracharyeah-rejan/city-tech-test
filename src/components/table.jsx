@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import axios from 'axios';
+
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,10 +15,25 @@ const CustomTable = ({ data }) => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    setRows(data);
-  }, [data]);
+    /* fetch data */
+    const fetchData = async () => {
+      return axios.post(
+        'https://jp-dev.cityremit.global/web-api/transaction-manager/v1/admin/dashboard/search',
+        {},
+        { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }
+      );
+    };
 
-  if (!data) {
+    fetchData()
+      .then((response) => {
+        console.log(response.data);
+        setRows(response.data.data);
+        setAuth(true);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  if (!rows) {
     return <h4>No data to render!</h4>;
   }
 

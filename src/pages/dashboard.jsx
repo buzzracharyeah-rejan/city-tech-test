@@ -4,7 +4,6 @@ import axios from 'axios';
 const Dashboard = () => {
   const [data, setData] = useState();
   useEffect(() => {
-    console.log(localStorage.getItem('jwt'));
     /* fetch data */
     const fetchData = async () => {
       return axios.post(

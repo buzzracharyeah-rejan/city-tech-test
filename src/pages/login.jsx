@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 import Avatar from '@mui/material/Avatar';
@@ -43,13 +44,11 @@ export default function SignIn() {
     setUser({ ...user, [event.target.name]: event.target.value });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    console.log(user);
+  const handleSubmit = async (email, password) => {
     try {
       const response = await axios.post('https://jp-dev.cityremit.global/web-api/config/v1/auths/login', {
-        login_id: user.email,
-        login_password: user.password,
+        login_id: email,
+        login_password: password,
         ip_address: '192.158.1.38',
       });
 
@@ -80,91 +79,58 @@ export default function SignIn() {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin='normal'
-              required
-              fullWidth
-              id='email'
-              label='Email Address'
-              name='email'
-              autoComplete='email'
-              autoFocus
-              onChange={handleChange}
-            />
-            <TextField
-              margin='normal'
-              required
-              fullWidth
-              name='password'
-              label='Password'
-              type='password'
-              id='password'
-              autoComplete='current-password'
-              onChange={handleChange}
-            />
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }} onSubmit={handleSubmit}>
-              Sign In
-            </Button>
-          </Box>
+
+          <Formik
+            initialValues={{
+              email: '',
+              password: '',
+            }}
+            validationSchema={schema}
+            onSubmit={(values) => {
+              handleSubmit(values.email, values.password);
+            }}
+          >
+            {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => {
+              return (
+                <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                  <TextField
+                    margin='normal'
+                    required
+                    fullWidth
+                    id='email'
+                    label='Email Address'
+                    name='email'
+                    autoComplete='email'
+                    autoFocus
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.email && Boolean(errors.email)}
+                    helperText={touched.email && errors.email}
+                  />
+                  <TextField
+                    margin='normal'
+                    required
+                    fullWidth
+                    name='password'
+                    label='Password'
+                    type='password'
+                    id='password'
+                    autoComplete='current-password'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.password && Boolean(errors.password)}
+                    helperText={touched.password && errors.password}
+                  />
+                  <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }} onSubmit={handleSubmit}>
+                    Sign In
+                  </Button>
+                </Box>
+              );
+            }}
+          </Formik>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );
 }
-
-/* 
-
-<Formik
-       initialValues={{
-         email: '',
-         password: ''
-       }}
-       validationSchema={schema}
-       onSubmit={values => {
-         console.log(values);
-       }}
-     >
-       {({  values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          isSubmitting, }) => (
-          <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin='normal'
-              required
-              fullWidth
-              id='email'
-              label='Email Address'
-              name='email'
-              autoComplete='email'
-              autoFocus
-              onChange={handleChange}
-               error={touched.username && Boolean(errors.username)}
-                  helperText={touched.username && errors.username}
-            />
-            <TextField
-              margin='normal'
-              required
-              fullWidth
-              name='password'
-              label='Password'
-              type='password'
-              id='password'
-              autoComplete='current-password'
-              onChange={handleChange}
-               error={touched.username && Boolean(errors.username)}
-                  helperText={touched.username && errors.username}
-            />
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3, mb: 2 }} onSubmit={handleSubmit}>
-              Sign In
-            </Button>
-          </Box>
-         
-       )}
-     </Formik>
-*/

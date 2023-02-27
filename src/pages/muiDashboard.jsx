@@ -18,29 +18,10 @@ import CustomTable from '../components/table';
 import { useNavigate } from 'react-router-dom';
 
 const MUIDashboard = () => {
-  const [auth, setAuth] = useState(false);
+  const [auth, setAuth] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [data, setData] = useState();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(localStorage.getItem('jwt'));
-    /* fetch data */
-    const fetchData = async () => {
-      return axios.post(
-        'https://jp-dev.cityremit.global/web-api/transaction-manager/v1/admin/dashboard/search',
-        {},
-        { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } }
-      );
-    };
-
-    fetchData()
-      .then((response) => {
-        setData(response.data.data);
-        setAuth(true);
-      })
-      .catch((err) => console.log(err));
-  }, []);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
